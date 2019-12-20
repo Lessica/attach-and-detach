@@ -1,0 +1,9 @@
+Package: com.darwindev.attach-and-detach
+Name: Attach & Detach
+Version: 0.1-1
+Description: The HDIK implementation on iOS.
+Section: System
+Depends: firmware (>= 12.0)
+Architecture: iphoneos-arm
+Author: Lessica <i.82@me.com>
+Maintainer: Lessica <i.82@me.com>
