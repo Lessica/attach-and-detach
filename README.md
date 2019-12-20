@@ -2,7 +2,7 @@
 
 I found this from [Comex](https://github.com/comex/attach-and-detach), and [async_wake_ios](https://github.com/xerub/async_wake_ios/blob/master/async_wake_ios/libjb/hdik.c), another modified version. I just wrote a build script to make it a package :-)
 
-You can mount iOS Developer Disk Image without Xcode.
+You can mount iOS Developer Disk Image without Xcode. Tested on Checkra1n 0.9.7 and iOS 13.3.
 
 
 ## Build
