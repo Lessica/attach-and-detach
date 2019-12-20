@@ -5,6 +5,13 @@ I found this from [Comex](https://github.com/comex/attach-and-detach), and [asyn
 You can mount iOS Developer Disk Image without Xcode.
 
 
+## Build
+
+```shell script
+./build.sh
+```
+
+
 ## Usage
 
 ```shell script
