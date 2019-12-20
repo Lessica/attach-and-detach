@@ -1,0 +1,3 @@
+[submodule "IOKit"]
+	path = IOKit
+	url = git@github.com:opensource-apple/IOKitUser.git

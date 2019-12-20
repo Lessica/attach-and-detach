@@ -1,3 +1,5 @@
+// xcrun clang -fPIC -Wall -Os -pipe -g3 attach.c -o build/attach -F. -Wl,-framework,Foundation,-framework,CoreFoundation,-framework,IOKit -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk -I. -IIOKit_private -arch arm64 -Wl,-dead_strip
+
 #include <IOKit/IOKitLib.h>
 #include <IOKit/IOCFSerialize.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -9,14 +11,17 @@
 
 // based on debug_image_mount
 
-int main(int argc, char **argv) {
-    if(!argv[1]) {
+int main(int argc, char **argv)
+{
+    if (!argv[1])
+    {
         fprintf(stderr, "Usage: attach file.dmg\n");
         return 1;
     }
 
     char *abspath = realpath(argv[1], NULL);
-    if(!abspath) {
+    if (!abspath)
+    {
         fprintf(stderr, "couldn't resolve file: %s\n", strerror(errno));
         return 1;
     }
@@ -35,7 +40,8 @@ int main(int argc, char **argv) {
     CFDataRef props_data = IOCFSerialize(props, 0);
     assert(props_data);
 
-    struct HDIImageCreateBlock64 {
+    struct HDIImageCreateBlock64
+    {
         uint32_t magic;
         uint32_t one;
         char *props;
@@ -45,25 +51,27 @@ int main(int argc, char **argv) {
     memset(&stru, 0, sizeof(stru));
     stru.magic = 0xbeeffeed;
     stru.one = 1;
-    stru.props = (char *) CFDataGetBytePtr(props_data);
+    stru.props = (char *)CFDataGetBytePtr(props_data);
     stru.props_size = CFDataGetLength(props_data);
 
     uint32_t val;
     size_t val_size = sizeof(val);
 
     kern_return_t ret = IOConnectCallStructMethod(connect, 5, &stru, sizeof(stru), &val, &val_size);
-    if(ret) {
+    if (ret)
+    {
         fprintf(stderr, "returned %x\n", ret);
         return 1;
     }
     assert(val_size == sizeof(val));
-    
+
     CFMutableDictionaryRef pmatch = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(pmatch, CFSTR("hdik-unique-identifier"), uuid);
     CFMutableDictionaryRef matching = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(matching, CFSTR("IOPropertyMatch"), pmatch);
     service = IOServiceGetMatchingService(kIOMasterPortDefault, matching);
-    if(!service) {
+    if (!service)
+    {
         fprintf(stderr, "successfully attached, but didn't find top entry in IO registry\n");
         return 1;
     }
@@ -71,9 +79,11 @@ int main(int argc, char **argv) {
     bool ok = false;
     io_iterator_t iter;
     assert(!IORegistryEntryCreateIterator(service, kIOServicePlane, kIORegistryIterateRecursively, &iter));
-    while(service = IOIteratorNext(iter)) {
+    while ((service = IOIteratorNext(iter)))
+    {
         CFStringRef bsd_name = IORegistryEntryCreateCFProperty(service, CFSTR("BSD Name"), NULL, 0);
-        if(bsd_name) {
+        if (bsd_name)
+        {
             char buf[MAXPATHLEN];
             assert(CFStringGetCString(bsd_name, buf, sizeof(buf), kCFStringEncodingUTF8));
             puts(buf);
@@ -81,7 +91,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    if(!ok) {
+    if (!ok)
+    {
         fprintf(stderr, "successfully attached, but didn't find BSD name in IO registry\n");
         return 1;
     }
